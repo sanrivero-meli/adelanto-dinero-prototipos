@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concepto 2: Escenarios de Vida</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 667px;
+        }
+        
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .screen {
+            display: none;
+            padding: 20px;
+            height: 567px;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-card {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .scenario-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .scenario-card h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        
+        .scenario-card ul {
+            list-style: none;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-card li {
+            margin-bottom: 5px;
+        }
+        
+        .button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #555;
+        }
+        
+        .button.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .button.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .active-scenarios {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        
+        .scenario-progress {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            background: #666;
+            height: 8px;
+            border-radius: 10px;
+            transition: width 0.3s;
+        }
+        
+        .progress-details {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .progress-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .progress-actions .button {
+            flex: 1;
+            padding: 8px 5px;
+            font-size: 11px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .scenario-detail {
+            text-align: center;
+        }
+        
+        .scenario-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-meta {
+            background: #f8f8f8;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .recommendation-card {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .action-buttons .button {
+            flex: 1;
+            padding: 12px 10px;
+            font-size: 14px;
+        }
+        
+        .users-insight {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .bottom-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+        }
+        
+        .bottom-actions .button {
+            flex: 1;
+            padding: 10px 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Hub de Escenarios -->
+    <div class="phone-container">
+        <div class="header">
+            <span>←</span>
+            <h1>Escenarios de Vida</h1>
+            <span>⋮</span>
+        </div>
+        
+        <div class="screen active" id="hub">
+            <h2 style="text-align: center; margin-bottom: 20px; font-size: 18px;">🎯 ¿Qué quieres lograr hoy?</h2>
+            
+            <div class="scenario-grid">
+                <div class="scenario-card" onclick="showScreen('business')">
+                    <h3>🏢 NEGOCIOS</h3>
+                    <ul>
+                        <li>• Inventario</li>
+                        <li>• Equipamiento</li>
+                        <li>• Inversión</li>
+                    </ul>
+                    <button class="button">Explorar →</button>
+                </div>
+                
+                <div class="scenario-card" onclick="showScreen('family')">
+                    <h3>👨‍👩‍👧‍👦 FAMILIA</h3>
+                    <ul>
+                        <li>• Emergencias</li>
+                        <li>• Educación</li>
+                        <li>• Hogar</li>
+                    </ul>
+                    <button class="button">Explorar →</button>
+                </div>
+                
+                <div class="scenario-card">
+                    <h3>📅 OPERACIONES</h3>
+                    <ul>
+                        <li>• Flujo Regular</li>
+                        <li>• Gastos Fijos</li>
+                        <li>• Estacionales</li>
+                    </ul>
+                    <button class="button">Acceso rápido</button>
+                </div>
+                
+                <div class="scenario-card">
+                    <h3>🎓 PRIMEROS PASOS</h3>
+                    <ul>
+                        <li>• ¿Qué es?</li>
+                        <li>• Casos reales</li>
+                        <li>• Simulador</li>
+                    </ul>
+                    <button class="button">Aprender →</button>
+                </div>
+            </div>
+            
+            <div class="active-scenarios">
+                <h3 style="font-size: 16px; margin-bottom: 15px;">🏆 TUS ESCENARIOS ACTIVOS</h3>
+                
+                <div class="scenario-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">🏠 Mejora cocina</span>
+                        <span style="font-size: 14px; font-weight: 600;">80%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    <div class="progress-details">
+                        Meta: $1,200 • Faltan: $240 • 15 días
+                    </div>
+                    <div class="progress-actions">
+                        <button class="button" onclick="showScreen('scenario-detail')">Continuar</button>
+                        <button class="button secondary">Ver progreso</button>
+                    </div>
+                </div>
+                
+                <div class="scenario-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">🏢 Inventario navidad</span>
+                        <span style="font-size: 14px; font-weight: 600;">30%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 30%;"></div>
+                    </div>
+                    <div class="progress-details">
+                        Meta: $2,000 • Faltan: $1,400 • 45 días
+                    </div>
+                    <div class="progress-actions">
+                        <button class="button" onclick="showScreen('scenario-detail')">Continuar</button>
+                        <button class="button secondary">Ajustar meta</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Business Scenarios -->
+        <div class="screen" id="business">
+            <button class="back-button" onclick="showScreen('hub')">←</button>
+            <div style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">🏢 Escenarios de Negocio</h2>
+                
+                <div class="scenario-card" onclick="showScreen('scenario-detail')" style="margin-bottom: 15px;">
+                    <h3>📦 Compra de Inventario</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Financia tu inventario para maximizar ventas
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $500 - $3,000</div>
+                        <div>⏱️ Plazo común: 15-45 días</div>
+                        <div>📈 ROI promedio: 20-35%</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+                
+                <div class="scenario-card" style="margin-bottom: 15px;">
+                    <h3>🔧 Equipamiento</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Invierte en herramientas y equipo para crecer
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $200 - $1,500</div>
+                        <div>⏱️ Plazo común: 30-60 días</div>
+                        <div>📈 Beneficio: Productividad +40%</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+                
+                <div class="scenario-card">
+                    <h3>💡 Oportunidad de Inversión</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Aprovecha oportunidades únicas de mercado
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $300 - $2,000</div>
+                        <div>⏱️ Plazo común: 7-30 días</div>
+                        <div>📈 Potencial: Expansión mercado</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Family Scenarios -->
+        <div class="screen" id="family">
+            <button class="back-button" onclick="showScreen('hub')">←</button>
+            <div style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">👨‍👩‍👧‍👦 Escenarios Familiares</h2>
+                
+                <div class="scenario-card" style="margin-bottom: 15px;">
+                    <h3>🚨 Emergencia Familiar</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Cubre gastos médicos o urgencias imprevistas
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $100 - $1,000</div>
+                        <div>⏱️ Disponible: Inmediato</div>
+                        <div>🛡️ Tranquilidad: Invaluable</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+                
+                <div class="scenario-card" onclick="showScreen('scenario-detail')" style="margin-bottom: 15px;">
+                    <h3>🏠 Mejoras del Hogar</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Invierte en comodidad y valor de tu hogar
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $300 - $2,000</div>
+                        <div>⏱️ Plazo común: 30-90 días</div>
+                        <div>📈 Beneficio: +Confort familia</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+                
+                <div class="scenario-card" style="margin-bottom: 15px;">
+                    <h3>🎓 Educación</h3>
+                    <p style="font-size: 14px; color: #666; margin: 10px 0;">
+                        Invierte en el futuro educativo familiar
+                    </p>
+                    <div style="text-align: left; font-size: 12px; color: #666;">
+                        <div>💰 Monto típico: $200 - $1,500</div>
+                        <div>⏱️ Plazo común: 15-45 días</div>
+                        <div>📈 ROI: Conocimiento duradero</div>
+                    </div>
+                    <button class="button" style="margin-top: 10px;">Iniciar escenario</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scenario Detail -->
+        <div class="screen" id="scenario-detail">
+            <button class="back-button" onclick="showScreen('hub')">←</button>
+            <div style="margin-top: 30px;">
+                <div class="scenario-detail">
+                    <div class="scenario-icon">📦</div>
+                    <h2>Inventario Navidad</h2>
+                    <p style="color: #666; margin-bottom: 20px;">Compra inventario para temporada alta</p>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">📊 PROGRESO ACTUAL</h3>
+                    <div class="progress-bar" style="height: 12px;">
+                        <div class="progress-fill" style="width: 30%; height: 12px;"></div>
+                    </div>
+                    <p style="font-size: 18px; font-weight: 600; margin-top: 10px;">
+                        $600 de $2,000 (30% completado)
+                    </p>
+                </div>
+                
+                <div class="scenario-meta">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">🎯 DETALLES DE TU META</h3>
+                    <div class="meta-row">
+                        <span>Objetivo:</span>
+                        <span>$2,000 para inventario</span>
+                    </div>
+                    <div class="meta-row">
+                        <span>Plazo:</span>
+                        <span>45 días (hasta 15 Nov)</span>
+                    </div>
+                    <div class="meta-row">
+                        <span>ROI esperado:</span>
+                        <span>25% en temporada</span>
+                    </div>
+                    <div class="meta-row">
+                        <span>Progreso:</span>
+                        <span>3 de 8 adelantos planificados</span>
+                    </div>
+                </div>
+                
+                <div class="recommendation-card">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">💡 RECOMENDACIÓN PARA HOY</h3>
+                    <p><strong>Adelanto sugerido: $350</strong></p>
+                    <p style="font-size: 14px; margin: 8px 0;">
+                        Razón: Precios mayoristas suben 15% próxima semana
+                    </p>
+                    <p style="font-size: 14px;">
+                        Impacto: Te acerca 18% más a tu meta
+                    </p>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="button">⚡ Adelantar Ahora $350</button>
+                    <button class="button secondary">📅 Programar para después</button>
+                </div>
+                
+                <div class="users-insight">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">📈 USUARIOS SIMILARES</h3>
+                    <p style="margin-bottom: 8px;">
+                        89% de negocios como el tuyo completan esta meta
+                    </p>
+                    <p style="font-style: italic; font-size: 14px;">
+                        Consejo popular: "Adelanta en incrementos pequeños"
+                    </p>
+                </div>
+                
+                <div class="bottom-actions">
+                    <button class="button secondary">📊 Ver análisis</button>
+                    <button class="button secondary">🏆 Mis logros</button>
+                    <button class="button secondary">⚙️ Ajustar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // Simulate progress updates
+        function updateProgress(element, targetWidth) {
+            const progressFill = element.querySelector('.progress-fill');
+            let currentWidth = 0;
+            const increment = targetWidth / 50;
+            
+            const interval = setInterval(() => {
+                currentWidth += increment;
+                if (currentWidth >= targetWidth) {
+                    currentWidth = targetWidth;
+                    clearInterval(interval);
+                }
+                progressFill.style.width = currentWidth + '%';
+            }, 20);
+        }
+        
+        // Initialize any animations when screens load
+        document.addEventListener('DOMContentLoaded', function() {
+            // You could add initialization code here
+        });
+    </script>
+</body>
+</html> 

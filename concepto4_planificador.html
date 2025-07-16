@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concepto 4: Planificador de Flujo Inteligente</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 667px;
+        }
+        
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .screen {
+            display: none;
+            padding: 20px;
+            height: 567px;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .finance-overview {
+            background: linear-gradient(135deg, #f8f8f8, #e8e8e8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .balance-amount {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .balance-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .balance-status {
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        .accounts-section {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .account-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .account-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .optimization-card {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-section {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .forecast-timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        
+        .timeline-bar {
+            flex: 1;
+            height: 20px;
+            margin: 0 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .timeline-segment {
+            height: 100%;
+            float: left;
+        }
+        
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #555;
+        }
+        
+        .button.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .button.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .button.small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .action-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .action-row .button {
+            flex: 1;
+            padding: 8px 5px;
+            font-size: 12px;
+        }
+        
+        .simulator-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .input-group input {
+            width: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        
+        .result-card {
+            background: #e8f4f8;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+        }
+        
+        .performance-metrics {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .metric-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .goals-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .goal-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .progress-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: conic-gradient(#666 0deg 288deg, #e0e0e0 288deg 360deg);
+            margin: 0 auto 10px;
+            position: relative;
+        }
+        
+        .progress-circle::after {
+            content: '80%';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .alternatives-table {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .table-header {
+            font-weight: 600;
+            background: #f8f8f8;
+            margin: -15px -15px 10px;
+            padding: 10px 15px;
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        .status-good { background: #4CAF50; }
+        .status-warning { background: #FFA726; }
+        .status-critical { background: #F44336; }
+    </style>
+</head>
+<body>
+    <!-- Dashboard 360° -->
+    <div class="phone-container">
+        <div class="header">
+            <span>☰</span>
+            <h1>Planificador Flujo Inteligente</h1>
+            <span>⚙️</span>
+        </div>
+        
+        <div class="screen active" id="dashboard-360">
+            <div class="finance-overview">
+                <h2 style="font-size: 16px; margin-bottom: 15px; text-align: center;">📊 VISTA 360° DE TUS FINANZAS</h2>
+            </div>
+            
+            <div class="balance-cards">
+                <div class="balance-card">
+                    <div class="balance-amount">$1,245</div>
+                    <div class="balance-label">💰 BALANCE HOY</div>
+                    <div class="balance-status">✅ Estable</div>
+                </div>
+                
+                <div class="balance-card">
+                    <div class="balance-amount">78/100</div>
+                    <div class="balance-label">📈 SALUD FINANCIERA</div>
+                    <div class="balance-status">⭐⭐⭐</div>
+                </div>
+            </div>
+            
+            <div class="accounts-section">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">🔗 CUENTAS CONECTADAS (3 de 5)</h3>
+                <div class="account-item">
+                    <span>✅ Banco Principal</span>
+                    <span>✅ Tarjeta Crédito</span>
+                </div>
+                <div class="account-item">
+                    <span>✅ Cuenta Ahorros</span>
+                    <span style="color: #666;">➕ Agregar más</span>
+                </div>
+            </div>
+            
+            <div class="optimization-card">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">⚡ OPTIMIZACIÓN INTELIGENTE</h3>
+                <p style="margin-bottom: 8px;"><strong>🎯 Recomendación:</strong> Adelanto $200 el martes</p>
+                <p style="margin-bottom: 8px; font-size: 14px;">💡 Razón: Evita sobregiro y ahorra $15 en costos</p>
+                <p style="margin-bottom: 15px; font-size: 14px;">📊 Alternativa: Usar ahorros (menos eficiente)</p>
+                
+                <div class="action-row">
+                    <button class="button">✅ Aplicar</button>
+                    <button class="button secondary" onclick="showScreen('analysis-center')">📊 Comparar opciones</button>
+                    <button class="button secondary">❌ Ignorar</button>
+                </div>
+            </div>
+            
+            <div class="forecast-section">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">📅 PRONÓSTICO 30 DÍAS</h3>
+                
+                <div class="timeline-bar">
+                    <div class="timeline-segment" style="width: 16.67%; background: #666;"></div>
+                    <div class="timeline-segment" style="width: 16.67%; background: #666;"></div>
+                    <div class="timeline-segment" style="width: 16.67%; background: #666;"></div>
+                    <div class="timeline-segment" style="width: 16.67%; background: #666;"></div>
+                    <div class="timeline-segment" style="width: 16.67%; background: #666;"></div>
+                    <div class="timeline-segment" style="width: 16.66%; background: #FFA726;"></div>
+                </div>
+                
+                <div class="timeline-labels">
+                    <span>Hoy</span>
+                    <span>5</span>
+                    <span>10</span>
+                    <span>15</span>
+                    <span>20</span>
+                    <span>25</span>
+                    <span>30</span>
+                </div>
+                
+                <div style="margin-top: 10px; font-size: 14px;">
+                    <div style="margin-bottom: 5px;">
+                        <span class="status-indicator status-good"></span>
+                        <span class="status-indicator status-warning"></span>
+                        <span class="status-indicator status-good"></span>
+                        <span class="status-indicator status-good"></span>
+                        <span class="status-indicator status-warning"></span>
+                        <span class="status-indicator status-good"></span>
+                    </div>
+                    <p style="font-size: 12px; color: #666;">
+                        Días críticos: 7 (flujo bajo), 23 (gastos altos)
+                    </p>
+                </div>
+                
+                <div class="action-row">
+                    <button class="button secondary" onclick="showScreen('analysis-center')">📊 Ver detalles</button>
+                    <button class="button secondary">⚙️ Configurar alertas</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Centro de Análisis -->
+        <div class="screen" id="analysis-center">
+            <button class="back-button" onclick="showScreen('dashboard-360')">←</button>
+            <div style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">Centro de Análisis</h2>
+                
+                <div class="simulator-card">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">🎯 SIMULADOR DE ESCENARIOS</h3>
+                    
+                    <div class="input-group">
+                        <label for="amount-input">¿Qué pasa si adelanto...</label>
+                        <input type="number" id="amount-input" value="300" placeholder="Monto en $">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="date-input">...en esta fecha?</label>
+                        <input type="date" id="date-input" value="2024-01-15">
+                    </div>
+                    
+                    <button class="button" onclick="runSimulation()">🔄 Simular Escenario</button>
+                    
+                    <div class="result-card" id="simulation-result">
+                        <h4 style="font-size: 14px; margin-bottom: 8px;">Resultado de Simulación:</h4>
+                        <div style="font-size: 14px;">
+                            <div>• Costo: $12</div>
+                            <div>• Impacto: Positivo</div>
+                            <div>• Beneficio: Evita $25 en sobregiros</div>
+                            <div>• Flujo resultante: <span style="color: #4CAF50;">████████░░ Estable</span></div>
+                        </div>
+                        <div style="margin-top: 10px;">
+                            <button class="button small secondary">📊 Ver proyección</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="performance-metrics">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">📈 ANÁLISIS DE RENDIMIENTO</h3>
+                    <p style="margin-bottom: 10px; font-weight: 600;">Últimos 3 meses:</p>
+                    
+                    <div class="metric-row">
+                        <span>• Adelantos realizados:</span>
+                        <span><strong>8</strong></span>
+                    </div>
+                    <div class="metric-row">
+                        <span>• Eficiencia:</span>
+                        <span><strong>92% (mejor timing)</strong></span>
+                    </div>
+                    <div class="metric-row">
+                        <span>• Ahorro vs alternativas:</span>
+                        <span><strong>$127</strong></span>
+                    </div>
+                    <div class="metric-row">
+                        <span>• Tendencia:</span>
+                        <span><strong>Mejorando ↗️</strong></span>
+                    </div>
+                </div>
+                
+                <div class="goals-section">
+                    <div class="goal-card">
+                        <h4 style="font-size: 14px; margin-bottom: 10px;">Meta Actual:</h4>
+                        <div class="progress-circle"></div>
+                        <div style="font-size: 12px;">Estabilidad</div>
+                    </div>
+                    
+                    <div class="goal-card">
+                        <h4 style="font-size: 14px; margin-bottom: 10px;">Recomendación:</h4>
+                        <div style="font-size: 14px; margin: 15px 0;">🎯</div>
+                        <div style="font-size: 12px;">Fondo emergencia<br>$500 en 60 días</div>
+                    </div>
+                </div>
+                
+                <div class="alternatives-table">
+                    <div class="table-header">🔍 COMPARACIÓN CON ALTERNATIVAS</div>
+                    
+                    <div class="table-row">
+                        <span><strong>Opción</strong></span>
+                        <span><strong>Costo</strong></span>
+                        <span><strong>Disponibilidad</strong></span>
+                    </div>
+                    
+                    <div class="table-row">
+                        <span>Adelanto $300:</span>
+                        <span>$12</span>
+                        <span>1min</span>
+                    </div>
+                    
+                    <div class="table-row">
+                        <span>Préstamo banco:</span>
+                        <span>$35</span>
+                        <span>3 días</span>
+                    </div>
+                    
+                    <div class="table-row">
+                        <span>Tarjeta crédito:</span>
+                        <span>$28</span>
+                        <span>Ahora</span>
+                    </div>
+                    
+                    <div class="table-row">
+                        <span>Usar ahorros:</span>
+                        <span>$0</span>
+                        <span>Afecta meta</span>
+                    </div>
+                </div>
+                
+                <div class="action-row">
+                    <button class="button secondary">📊 Análisis completo</button>
+                    <button class="button secondary">💡 Nuevas estrategias</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        function runSimulation() {
+            const amount = document.getElementById('amount-input').value;
+            const resultCard = document.getElementById('simulation-result');
+            
+            // Simulate calculation
+            const cost = Math.round(amount * 0.04);
+            const savings = Math.round(amount * 0.08);
+            
+            resultCard.innerHTML = `
+                <h4 style="font-size: 14px; margin-bottom: 8px;">Resultado de Simulación:</h4>
+                <div style="font-size: 14px;">
+                    <div>• Costo: $${cost}</div>
+                    <div>• Impacto: ${cost < savings ? 'Positivo' : 'Negativo'}</div>
+                    <div>• Beneficio: Evita $${savings} en sobregiros</div>
+                    <div>• Flujo resultante: <span style="color: #4CAF50;">████████░░ Estable</span></div>
+                </div>
+                <div style="margin-top: 10px;">
+                    <button class="button small secondary">📊 Ver proyección</button>
+                    <button class="button small">✅ Aplicar adelanto $${amount}</button>
+                </div>
+            `;
+        }
+        
+        // Simulate real-time balance updates
+        function updateBalance() {
+            const balanceElement = document.querySelector('.balance-amount');
+            if (balanceElement) {
+                let currentBalance = parseInt(balanceElement.textContent.replace('$', '').replace(',', ''));
+                // Small random fluctuation
+                const change = (Math.random() - 0.5) * 20;
+                currentBalance += Math.round(change);
+                balanceElement.textContent = '$' + currentBalance.toLocaleString();
+            }
+        }
+        
+        // Update balance every 60 seconds
+        setInterval(updateBalance, 60000);
+        
+        // Initialize timeline animation
+        function animateTimeline() {
+            const segments = document.querySelectorAll('.timeline-segment');
+            segments.forEach((segment, index) => {
+                setTimeout(() => {
+                    segment.style.opacity = '0.7';
+                    setTimeout(() => {
+                        segment.style.opacity = '1';
+                    }, 200);
+                }, index * 100);
+            });
+        }
+        
+        // Animate timeline on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(animateTimeline, 1000);
+        });
+        
+        // Add interactive effects for optimization card
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Aplicar')) {
+                e.target.textContent = '✓ Aplicado';
+                e.target.style.background = '#4CAF50';
+                setTimeout(() => {
+                    e.target.textContent = '✅ Aplicar';
+                    e.target.style.background = '#333';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html> 

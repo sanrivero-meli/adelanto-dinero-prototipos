@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concepto 3: Ecosistema Colaborativo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .phone-container {
+            max-width: 375px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 667px;
+        }
+        
+        .header {
+            background: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .screen {
+            display: none;
+            padding: 20px;
+            height: 567px;
+            overflow-y: auto;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        .welcome-banner {
+            background: linear-gradient(135deg, #f8f8f8, #e8e8e8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .community-stats {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .profile-card {
+            background: #f0f4ff;
+            border: 1px solid #d0d0ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .insights-card {
+            background: #f8f8f8;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .button:hover {
+            background: #555;
+        }
+        
+        .button.secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        
+        .button.secondary:hover {
+            background: #d0d0d0;
+        }
+        
+        .button.small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        .discussion-item {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: box-shadow 0.2s;
+        }
+        
+        .discussion-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .discussion-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .peer-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .similarity-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 6px;
+            margin: 8px 0;
+        }
+        
+        .similarity-fill {
+            background: #666;
+            height: 6px;
+            border-radius: 10px;
+        }
+        
+        .strategy-list {
+            list-style: none;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .strategy-list li {
+            margin-bottom: 5px;
+            color: #555;
+        }
+        
+        .achievements-section {
+            background: #fff9e6;
+            border: 1px solid #ffe066;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .achievement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .achievement-count {
+            background: #333;
+            color: white;
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+        
+        .back-button {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background: none;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .action-buttons .button {
+            flex: 1;
+            padding: 8px 5px;
+            font-size: 12px;
+        }
+        
+        .filters {
+            background: #f8f8f8;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .rating {
+            color: #ffa500;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            gap: 5px;
+            margin-top: 20px;
+        }
+        
+        .bottom-nav .button {
+            flex: 1;
+            padding: 8px 5px;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Dashboard Comunidad -->
+    <div class="phone-container">
+        <div class="header">
+            <span>☰</span>
+            <h1>Ecosistema Colaborativo</h1>
+            <span>🔔</span>
+        </div>
+        
+        <div class="screen active" id="community-hub">
+            <div class="welcome-banner">
+                <h2 style="font-size: 16px; margin-bottom: 8px;">👋 ¡Hola!</h2>
+                <p style="font-size: 14px;">Tu comunidad te puede ayudar</p>
+            </div>
+            
+            <div class="community-stats">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">👥 COMUNIDAD ACTIVA</h3>
+                <div class="stat-row">
+                    <span>📊 Usuarios conectados:</span>
+                    <span><strong>12,847</strong></span>
+                </div>
+                <div class="stat-row">
+                    <span>🔥 Tendencia hoy:</span>
+                    <span><strong>Adelantos parciales +23%</strong></span>
+                </div>
+                <div class="stat-row">
+                    <span>💬 Nuevas discusiones:</span>
+                    <span><strong>47</strong></span>
+                </div>
+            </div>
+            
+            <div class="profile-card">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">💡 TU PERFIL DE USUARIO</h3>
+                <p style="margin-bottom: 10px;"><strong>Tipo:</strong> Pequeño negocio • <strong>Patrón:</strong> Planificador</p>
+                <div style="display: flex; gap: 8px;">
+                    <button class="button small" onclick="showScreen('peer-insights')">🎯 Encuentra usuarios similares</button>
+                </div>
+                <div style="margin-top: 10px; display: flex; gap: 8px;">
+                    <button class="button secondary small">Ver mi perfil</button>
+                    <button class="button secondary small">Buscar peers</button>
+                </div>
+            </div>
+            
+            <div class="insights-card">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">📊 INSIGHTS DE LA COMUNIDAD</h3>
+                <ul style="list-style: none; font-size: 14px;">
+                    <li style="margin-bottom: 5px;">• Usuarios como tú adelantan $420 promedio</li>
+                    <li style="margin-bottom: 5px;">• Mejor timing según peers: Martes 10am</li>
+                    <li style="margin-bottom: 5px;">• 91% completa sus metas con adelantos parciales</li>
+                </ul>
+                <button class="button secondary small" style="margin-top: 10px;">Ver más estadísticas</button>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 16px; margin-bottom: 15px;">🎙️ DISCUSIONES POPULARES</h3>
+                
+                <div class="discussion-item" onclick="showScreen('discussion-detail')">
+                    <p style="font-weight: 600; margin-bottom: 5px;">❓ "¿Cuándo adelantar para inventario?"</p>
+                    <div class="discussion-meta">
+                        <span>💬 23 respuestas • ⭐ 3 expertos</span>
+                    </div>
+                </div>
+                
+                <div class="discussion-item">
+                    <p style="font-weight: 600; margin-bottom: 5px;">❓ "Primera vez, ¿qué esperar?"</p>
+                    <div class="discussion-meta">
+                        <span>💬 67 respuestas • 👥 Verificadas por comunidad</span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="button">💬 Participar</button>
+                    <button class="button secondary">❓ Hacer pregunta</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Peer Insights -->
+        <div class="screen" id="peer-insights">
+            <button class="back-button" onclick="showScreen('community-hub')">←</button>
+            <div style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px;">🔍 Peers Similares</h2>
+                
+                <div class="filters">
+                    <strong>Filtros activos:</strong> Pequeño negocio • Comercio • Activo
+                </div>
+                
+                <div class="peer-card">
+                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="font-size: 16px;">👤 "Cafetería Centro"</h3>
+                        <span style="font-size: 12px; color: #666;">(datos anónimos)</span>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 14px; font-weight: 600;">Similaridad:</span>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" style="width: 89%;"></div>
+                        </div>
+                        <span style="font-size: 12px; color: #666;">89%</span>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <p style="font-weight: 600; margin-bottom: 8px;">Su estrategia exitosa:</p>
+                        <ul class="strategy-list">
+                            <li>• Adelantos $300 cada 2 semanas</li>
+                            <li>• Timing: Lunes temprano</li>
+                            <li>• Meta: Flujo operativo estable</li>
+                            <li>• Resultado: 95% éxito en 6 meses</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="button">💬 Contactar</button>
+                        <button class="button secondary">📊 Ver más detalles</button>
+                    </div>
+                </div>
+                
+                <div class="peer-card">
+                    <div style="display: flex; justify-content: between; align-items: center; margin-bottom: 10px;">
+                        <h3 style="font-size: 16px;">👤 "Consultor Freelance"</h3>
+                    </div>
+                    <div style="margin-bottom: 8px;">
+                        <span style="font-size: 14px; font-weight: 600;">Similaridad:</span>
+                        <div class="similarity-bar">
+                            <div class="similarity-fill" style="width: 84%;"></div>
+                        </div>
+                        <span style="font-size: 12px; color: #666;">84%</span>
+                    </div>
+                    
+                    <div style="margin: 15px 0;">
+                        <p style="font-weight: 600; margin-bottom: 8px;">Su táctica compartida:</p>
+                        <ul class="strategy-list">
+                            <li>• Adelantos según proyectos confirmados</li>
+                            <li>• Promedio: $450 por adelanto</li>
+                            <li>• Consejo: "Siempre parcial, nunca total"</li>
+                            <li>• Valoración comunidad: <span class="rating">⭐⭐⭐⭐⭐</span> (4.8/5)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="button">💬 Intercambiar tips</button>
+                        <button class="button secondary">🔖 Seguir estrategia</button>
+                    </div>
+                </div>
+                
+                <div class="achievements-section">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">🏆 LOGROS RECIENTES DE LA COMUNIDAD</h3>
+                    
+                    <div class="achievement-item">
+                        <span>"Meta 6 meses cumplida"</span>
+                        <span class="achievement-count">+156</span>
+                    </div>
+                    <div class="achievement-item">
+                        <span>"Primer adelanto exitoso"</span>
+                        <span class="achievement-count">+89</span>
+                    </div>
+                    <div class="achievement-item">
+                        <span>"Ayudó a 10 usuarios"</span>
+                        <span class="achievement-count">+23</span>
+                    </div>
+                </div>
+                
+                <div class="bottom-nav">
+                    <button class="button secondary">🎯 Mis conexiones</button>
+                    <button class="button secondary">🏆 Mis logros</button>
+                    <button class="button secondary">📈 Estadísticas</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Discussion Detail -->
+        <div class="screen" id="discussion-detail">
+            <button class="back-button" onclick="showScreen('community-hub')">←</button>
+            <div style="margin-top: 30px;">
+                <h2 style="text-align: center; margin-bottom: 20px; font-size: 16px;">💬 Discusión</h2>
+                
+                <div style="background: #f8f8f8; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 10px;">❓ "¿Cuándo adelantar para inventario?"</h3>
+                    <p style="font-size: 14px; color: #666; margin-bottom: 10px;">
+                        Por: <strong>NegociantePromedio</strong> • hace 3 horas
+                    </p>
+                    <p style="font-size: 14px;">
+                        "Tengo una tienda pequeña y necesito comprar inventario navideño. ¿Cuál es el mejor momento para pedir un adelanto? ¿Alguien ha tenido experiencia con esto?"
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <h4 style="font-size: 14px; margin-bottom: 10px; color: #666;">💬 23 RESPUESTAS</h4>
+                </div>
+                
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong style="font-size: 14px;">⭐ ExpertoFintech</strong>
+                        <span style="font-size: 12px; color: #666;">hace 2 horas</span>
+                    </div>
+                    <p style="font-size: 14px; margin-bottom: 10px;">
+                        "Recomiendo adelantar 2-3 semanas antes de necesitar el producto. Los precios de mayoristas suelen subir cerca de fechas pico. Yo adelanto en incrementos pequeños para minimizar costos."
+                    </p>
+                    <div style="display: flex; gap: 10px; font-size: 12px; color: #666;">
+                        <span>👍 15 útil</span>
+                        <span>💬 Responder</span>
+                    </div>
+                </div>
+                
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong style="font-size: 14px;">👥 TiendaDelBarrio</strong>
+                        <span style="font-size: 12px; color: #666;">hace 1 hora</span>
+                    </div>
+                    <p style="font-size: 14px; margin-bottom: 10px;">
+                        "Totalmente de acuerdo con @ExpertoFintech. Yo uso esta estrategia desde hace 2 años. El truco es adelantar solo lo que necesitas esa semana, no todo de una vez."
+                    </p>
+                    <div style="display: flex; gap: 10px; font-size: 12px; color: #666;">
+                        <span>👍 8 útil</span>
+                        <span>💬 Responder</span>
+                    </div>
+                </div>
+                
+                <div style="background: white; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <strong style="font-size: 14px;">👤 ComerciantePro</strong>
+                        <span style="font-size: 12px; color: #666;">hace 30 min</span>
+                    </div>
+                    <p style="font-size: 14px; margin-bottom: 10px;">
+                        "Una regla que me funciona: adelanta cuando tengas al menos 70% de certeza de que vas a vender el inventario. Para navidad, eso suele ser octubre/noviembre."
+                    </p>
+                    <div style="display: flex; gap: 10px; font-size: 12px; color: #666;">
+                        <span>👍 12 útil</span>
+                        <span>💬 Responder</span>
+                    </div>
+                </div>
+                
+                <div style="background: #f0f8ff; border: 1px solid #cce7ff; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
+                    <textarea 
+                        placeholder="Comparte tu experiencia con la comunidad..." 
+                        style="width: 100%; border: none; background: transparent; resize: none; font-size: 14px; min-height: 60px;"
+                    ></textarea>
+                    <div style="text-align: right; margin-top: 10px;">
+                        <button class="button small">📤 Responder</button>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <button class="button secondary" onclick="showScreen('community-hub')">← Volver</button>
+                    <button class="button secondary">🔖 Seguir discusión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        // Simulate real-time community updates
+        function updateCommunityStats() {
+            const statsElement = document.querySelector('.community-stats');
+            if (statsElement) {
+                // Simulate small increments in user count
+                const userCountElement = statsElement.querySelector('.stat-row:first-child strong');
+                if (userCountElement) {
+                    let currentCount = parseInt(userCountElement.textContent.replace(',', ''));
+                    currentCount += Math.floor(Math.random() * 5) + 1;
+                    userCountElement.textContent = currentCount.toLocaleString();
+                }
+            }
+        }
+        
+        // Update stats every 30 seconds to simulate live activity
+        setInterval(updateCommunityStats, 30000);
+        
+        // Add click effects for peer interactions
+        document.addEventListener('click', function(e) {
+            if (e.target.textContent.includes('Contactar') || e.target.textContent.includes('Intercambiar')) {
+                e.target.textContent = '✓ Conectado';
+                e.target.style.background = '#4CAF50';
+                setTimeout(() => {
+                    e.target.textContent = e.target.textContent.includes('Conectado') ? '💬 Contactar' : '💬 Intercambiar tips';
+                    e.target.style.background = '#333';
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html> 
