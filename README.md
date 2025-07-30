@@ -1,79 +1,59 @@
-# Prototipos Adelanto de Dinero - Concepto de Aumento de Adopción
+# Mercado Pago Credit Section
 
-## 🎯 Objetivo del Proyecto
-Incrementar la adopción de la funcionalidad "Adelanto de Dinero" del 20% actual al 80%+ mediante diseño disruptivo de producto.
+This project contains HTML and CSS files generated from your Figma design for the "Consigue un crédito usando Mercado Pago" section.
 
-## 📋 Sobre el Proyecto
-Este repositorio contiene 4 conceptos innovadores diseñados para diferentes segmentos de usuarios:
-- **Usuarios Primerizos/Esporádicos**: Necesitan confianza y simplicidad
-- **Usuarios de Control de Flujo**: Buscan conveniencia y previsibilidad  
-- **Usuarios de Crecimiento**: Requieren herramientas de expansión empresarial
-- **Usuarios de Necesidad Personal**: Necesitan rapidez y facilidad de acceso
+## Files Generated
 
-## 🚀 Conceptos de Prototipos
+- `index.html` - Main HTML structure
+- `styles.css` - CSS styling with converted Tailwind classes
+- `README.md` - This file with instructions
 
-### [🤖 Concepto 1: Mi Asistente Financiero](concepto1_asistente_ia.html)
-**Enfoque**: Asistente de IA predictivo personalizado
-- Predicciones inteligentes de necesidades de flujo
-- Recomendaciones proactivas basadas en patrones
-- Chat conversacional para consultas financieras
-- **Público objetivo**: Todos los segmentos con énfasis en primerizos
+## Features
 
-### [🎯 Concepto 2: Escenarios de Vida](concepto2_escenarios.html)
-**Enfoque**: Jornadas basadas en objetivos de vida
-- Metas financieras gamificadas
-- Simulaciones de escenarios futuros
-- Progreso visual y logros desbloqueables
-- **Público objetivo**: Usuarios de crecimiento y necesidad personal
+- Responsive design that works on desktop, tablet, and mobile
+- Clean semantic HTML structure
+- CSS converted from Tailwind classes to vanilla CSS
+- Proper typography using Proxima Nova font family
+- Background images for the cards
 
-### [👥 Concepto 3: Ecosistema Colaborativo](concepto3_comunidad.html)
-**Enfoque**: Plataforma de insights peer-to-peer
-- Comunidad de usuarios con experiencias similares
-- Consejos anónimos y mejores prácticas
-- Conexión con mentores financieros
-- **Público objetivo**: Usuarios de control de flujo y crecimiento
+## Important Notes
 
-### [📊 Concepto 4: Planificador de Flujo Inteligente](concepto4_planificador.html)
-**Enfoque**: Gestión financiera 360° con simulaciones
-- Dashboard completo de finanzas personales/empresariales
-- Simulación de escenarios en tiempo real
-- Alertas predictivas y recomendaciones automáticas
-- **Público objetivo**: Usuarios de control de flujo y crecimiento empresarial
+### Background Images
+The CSS currently references images from localhost URLs:
+- Card 01: `http://localhost:3845/assets/a16945d035d074ac37fa07c50ddc4b0b7551d7fd.png`
+- Card 02: `http://localhost:3845/assets/c794857b172070a6afb57faa62d15221c25701b4.png`
 
-## 🌐 Demo en Vivo
-**Acceder a los prototipos**: [Ver Todos los Prototipos](index_prototipos.html)
+### To use your own images:
+1. Save the images from your Figma design
+2. Place them in a local `assets/` or `images/` folder
+3. Update the CSS file to reference your local image paths:
+   ```css
+   .card-01 {
+       background-image: url('./assets/card-01.png');
+   }
+   
+   .card-02 {
+       background-image: url('./assets/card-02.png');
+   }
+   ```
 
-## 📚 Documentación del Proyecto
-- [Estrategia de Implementación](implementation_strategy.md) - Plan de 24 meses con fases y métricas
-- [Plan de Testing](testing_plan.md) - Metodología de validación de 6 semanas
-- [Wireframes y Prototipos](wireframes_prototypes.md) - Diseños detallados y flujos
-- [Próximos Pasos](next_actions.md) - Plan ejecutivo de 30 días
+### Font Loading
+The design uses Proxima Nova font. To ensure proper display:
+1. Include Proxima Nova font files in your project, or
+2. Use a web font service like Google Fonts with a similar font, or
+3. The CSS includes fallback fonts that will be used if Proxima Nova is not available
 
-## 🛠️ Tecnologías Utilizadas
-- HTML5 / CSS3 / JavaScript
-- Diseño responsive
-- Componentes interactivos
-- Simulación de datos en tiempo real
+## Usage
 
-## 📈 Métricas de Éxito Esperadas
-- **Adopción**: 20% → 80%+
-- **Engagement**: Aumento del 300% en tiempo de uso
-- **Retención**: 85% en primer mes
-- **NPS**: Target +60
+1. Open `index.html` in a web browser to view the design
+2. Modify the CSS in `styles.css` to customize styling
+3. Replace image URLs with your actual image assets
+4. Integrate into your existing website or application
 
-## 🔄 Fases de Implementación
-1. **Fase 1** (Meses 1-8): Desarrollo y testing inicial
-2. **Fase 2** (Meses 9-16): Lanzamiento gradual y optimización
-3. **Fase 3** (Meses 17-24): Escalamiento y nuevas funcionalidades
+## Responsive Breakpoints
 
----
+- Desktop: Full layout with side-by-side cards
+- Tablet (< 1200px): Reduced padding, smaller title
+- Mobile (< 768px): Stacked cards, further reduced text sizes
 
-### 💡 ¿Cómo probar los prototipos?
-1. Visita [index_prototipos.html](index_prototipos.html) para ver la página principal
-2. Selecciona cualquiera de los 4 conceptos
-3. Interactúa con las funcionalidades disponibles
-4. Cada prototipo tiene múltiples pantallas navegables
-
----
-
-*Proyecto desarrollado para aumentar significativamente la adopción de Adelanto de Dinero mediante conceptos disruptivos centrados en el usuario.* 
+The design maintains the visual hierarchy and readability across all screen sizes.

@@ -1,0 +1,151 @@
+/* Reset and base styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Proxima Nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.5;
+}
+
+/* Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 64px; /* gap-16 = 64px */
+    padding: 80px 148px 80px 149px; /* py-20 pl-[149px] pr-[148px] */
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+}
+
+/* Main title */
+.main-title {
+    font-family: 'Proxima Nova', sans-serif;
+    font-weight: bold;
+    font-style: normal;
+    font-size: 56px;
+    line-height: 56px;
+    letter-spacing: -1.12px;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.9);
+    width: 851px;
+    max-width: 100%;
+}
+
+.main-title p {
+    display: block;
+    line-height: 56px;
+}
+
+/* Cards container */
+.cards-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 16px; /* gap-4 = 16px */
+    width: 100%;
+    max-width: 100%;
+}
+
+/* Individual cards */
+.card {
+    flex: 1;
+    max-width: 418px;
+    height: 552px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 10px; /* gap-2.5 = 10px */
+    padding: 40px;
+    border-radius: 24px; /* rounded-3xl = 24px */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 1px;
+}
+
+/* Card 01 with background image */
+.card-01 {
+    background-image: url('http://localhost:3845/assets/a16945d035d074ac37fa07c50ddc4b0b7551d7fd.png');
+}
+
+/* Card 02 with background image */
+.card-02 {
+    background-image: url('http://localhost:3845/assets/c794857b172070a6afb57faa62d15221c25701b4.png');
+}
+
+/* Card text */
+.card-text {
+    font-family: 'Proxima Nova', sans-serif;
+    font-weight: 600; /* Semibold */
+    font-style: normal;
+    font-size: 24px;
+    line-height: 30px;
+    text-align: left;
+    width: 100%;
+}
+
+/* Card 01 text (white on dark background) */
+.card-01 .card-text {
+    color: #ffffff;
+}
+
+/* Card 02 text (dark on light background) */
+.card-02 .card-text {
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.card-text p {
+    display: block;
+    line-height: 30px;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .container {
+        padding: 60px 40px;
+    }
+    
+    .main-title {
+        font-size: 48px;
+        line-height: 48px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        gap: 40px;
+        padding: 40px 20px;
+    }
+    
+    .main-title {
+        font-size: 36px;
+        line-height: 40px;
+    }
+    
+    .cards-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .card {
+        max-width: 100%;
+        width: 100%;
+        height: 400px;
+    }
+    
+    .card-text {
+        font-size: 20px;
+        line-height: 26px;
+    }
+}
