@@ -1,0 +1,44 @@
+:root {
+  /* Border Radius */
+  --border-radius-0: 0px;
+  --border-radius-100: 2px;
+  --border-radius-200: 4px;
+  --border-radius-300: 8px;
+  --border-radius-400: 12px;
+  --border-radius-500: 16px;
+  --border-radius-full: 9999px;
+
+  /* Border Width */
+  --border-width-0: 0px;
+  --border-width-100: 1px;
+  --border-width-200: 2px;
+
+  /* Spacing */
+  --space-0: 0px;
+  --space-100: 4px;
+  --space-200: 8px;
+  --space-300: 12px;
+  --space-400: 16px;
+  --space-600: 24px;
+  --space-800: 32px;
+  --space-1000: 40px;
+  --space-1200: 48px;
+  --space-1600: 64px;
+  --space-2000: 80px;
+  --space-2400: 96px;
+  --space-3200: 128px;
+  --space-4000: 160px;
+
+  /* Negative Spacing */
+  --space-negative-100: -4px;
+  --space-negative-200: -8px;
+  --space-negative-300: -12px;
+  --space-negative-400: -16px;
+  --space-negative-600: -24px;
+
+  /* Blur Effects */
+  --blur-100: 4px;
+  --blur-200: 8px;
+  --blur-300: 12px;
+}
+

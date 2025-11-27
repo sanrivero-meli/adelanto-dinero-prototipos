@@ -1,0 +1,34 @@
+:root {
+  /* Font Sizes */
+  --size-100: 10px;
+  --size-200: 12px;
+  --size-300: 14px;
+  --size-400: 16px;
+  --size-500: 18px;
+  --size-600: 20px;
+  --size-700: 24px;
+  --size-800: 28px;
+  --size-900: 32px;
+  --size-1000: 40px;
+  --size-1100: 48px;
+  --size-1200: 56px;
+
+  /* Line Heights */
+  --line-height-100: 12px;
+  --line-height-200: 14px;
+  --line-height-300: 16px;
+  --line-height-400: 20px;
+  --line-height-500: 24px;
+  --line-height-600: 28px;
+  --line-height-700: 32px;
+  --line-height-800: 36px;
+  --line-height-900: 40px;
+  --line-height-1000: 48px;
+  --line-height-1100: 56px;
+  --line-height-1200: 66px;
+
+  /* Letter Spacing */
+  --letter-spacing-default: 0px;
+  --letter-spacing-compact: -1px;
+}
+
