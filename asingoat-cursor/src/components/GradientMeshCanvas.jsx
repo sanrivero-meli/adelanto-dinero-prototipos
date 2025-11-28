@@ -87,6 +87,27 @@ export default function GradientMeshCanvas({ points, width, height, onCanvasClic
     onCanvasClick(x * scaleX, y * scaleY);
   };
 
+  const handleTouchEnd = (e) => {
+    if (!onCanvasClick) return;
+    
+    // Don't add point if touching controls
+    if (e.target.closest('[data-controls-panel]')) return;
+    
+    const touch = e.changedTouches[0];
+    if (!touch) return;
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    
+    // Scale coordinates to canvas dimensions (width/height props)
+    const scaleX = width / window.innerWidth;
+    const scaleY = height / window.innerHeight;
+    
+    onCanvasClick(x * scaleX, y * scaleY);
+  };
+
   return (
     <div 
       ref={containerRef}
@@ -98,6 +119,7 @@ export default function GradientMeshCanvas({ points, width, height, onCanvasClic
         overflow: 'hidden'
       }}
       onClick={handleClick}
+      onTouchEnd={handleTouchEnd}
     >
       <canvas
         ref={canvasRef}

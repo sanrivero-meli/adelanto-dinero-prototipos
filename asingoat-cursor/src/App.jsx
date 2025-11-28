@@ -16,6 +16,8 @@ function App() {
   const [displayWidth, setDisplayWidth] = useState(window.innerWidth);
   const [displayHeight, setDisplayHeight] = useState(window.innerHeight);
   const [instructionOpacity, setInstructionOpacity] = useState(1);
+  const [draggedPointIndex, setDraggedPointIndex] = useState(null);
+  const [draggedPointPosition, setDraggedPointPosition] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
   // Update display dimensions on resize - fullscreen
@@ -60,8 +62,13 @@ function App() {
     // If color picker is open, close it and don't create new point
     if (activeColorPickerIndex !== null) {
       setActiveColorPickerIndex(null);
+      // Also deselect point when closing color picker
+      setSelectedPointIndex(null);
       return;
     }
+
+    // Deselect any selected point when clicking canvas
+    setSelectedPointIndex(null);
 
     // Generate random color for new point
     const colors = [
@@ -89,6 +96,26 @@ function App() {
     const updatedPoints = [...points];
     updatedPoints[index] = { ...updatedPoints[index], x, y };
     setPoints(updatedPoints);
+  };
+
+  const handleDragStart = (index) => {
+    setDraggedPointIndex(index);
+  };
+
+  const handleDragMove = (index, clientX, clientY) => {
+    if (draggedPointIndex === index) {
+      setDraggedPointPosition({ x: clientX, y: clientY });
+    }
+  };
+
+  const handleDragEnd = (index) => {
+    // Check if we're over the trash area before clearing drag state
+    // This will be handled by ControlsPanel's onDeletePoint callback
+    // We'll clear the drag state after a short delay to allow ControlsPanel to check
+    setTimeout(() => {
+      setDraggedPointIndex(null);
+      setDraggedPointPosition({ x: 0, y: 0 });
+    }, 50);
   };
 
   const handlePointColorChange = (index, r, g, b) => {
@@ -251,6 +278,7 @@ function App() {
               handlePointColorChange(index, rgb.r, rgb.g, rgb.b);
             }}
             onRemove={() => handleRemovePoint(index)}
+            onSelect={handleSelectPoint}
             onColorPickerToggle={(isOpen) => {
               setActiveColorPickerIndex(isOpen ? index : null);
               // Select the point when opening color picker
@@ -258,6 +286,9 @@ function App() {
                 setSelectedPointIndex(index);
               }
             }}
+            onDragStart={handleDragStart}
+            onDragMove={handleDragMove}
+            onDragEnd={handleDragEnd}
             canvasWidth={canvasWidth}
             canvasHeight={canvasHeight}
             displayWidth={displayWidth}
@@ -270,6 +301,9 @@ function App() {
         points={points}
         onExport={handleExport}
         instructionOpacity={instructionOpacity}
+        draggedPointIndex={draggedPointIndex}
+        draggedPointPosition={draggedPointPosition}
+        onDeletePoint={(index) => handleRemovePoint(index)}
       />
       </div>
     </div>

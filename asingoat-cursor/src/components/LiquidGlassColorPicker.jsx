@@ -6,10 +6,22 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
   const [lightness, setLightness] = useState(50);
   const [isDraggingHue, setIsDraggingHue] = useState(false);
   const [isDraggingSaturation, setIsDraggingSaturation] = useState(false);
+  const [isDraggingPicker, setIsDraggingPicker] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [position, setPosition] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const pickerRef = useRef(null);
   const hueRef = useRef(null);
   const saturationRef = useRef(null);
+  const dragStartPos = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Convert hex to HSL
   const hexToHsl = useCallback((hex) => {
@@ -101,6 +113,16 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
     updateHue(e);
   }, []);
 
+  const handleHueTouchStart = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingHue(true);
+    const touch = e.touches[0];
+    if (touch) {
+      updateHue({ clientX: touch.clientX, clientY: touch.clientY });
+    }
+  }, []);
+
   const updateHue = useCallback((e) => {
     if (!hueRef.current) return;
     const rect = hueRef.current.getBoundingClientRect();
@@ -117,6 +139,16 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
     updateSaturation(e);
   }, []);
 
+  const handleSaturationTouchStart = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDraggingSaturation(true);
+    const touch = e.touches[0];
+    if (touch) {
+      updateSaturation({ clientX: touch.clientX, clientY: touch.clientY });
+    }
+  }, []);
+
   const updateSaturation = useCallback((e) => {
     if (!saturationRef.current) return;
     const rect = saturationRef.current.getBoundingClientRect();
@@ -128,33 +160,94 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
     setLightness(newLightness);
   }, []);
 
+  // Handle picker container dragging
+  const handlePickerMouseDown = useCallback((e) => {
+    // Don't start dragging if clicking on color controls
+    if (e.target.closest('[data-color-control]')) {
+      return;
+    }
+    setIsDraggingPicker(true);
+    const currentX = position?.x ?? window.innerWidth / 2;
+    const currentY = position?.y ?? window.innerHeight / 2;
+    dragStartPos.current = {
+      x: e.clientX - currentX,
+      y: e.clientY - currentY
+    };
+  }, [position]);
+
+  const handlePickerTouchStart = useCallback((e) => {
+    // Don't start dragging if touching color controls
+    if (e.target.closest('[data-color-control]')) {
+      return;
+    }
+    const touch = e.touches[0];
+    if (!touch) return;
+    setIsDraggingPicker(true);
+    const currentX = position?.x ?? window.innerWidth / 2;
+    const currentY = position?.y ?? window.innerHeight / 2;
+    dragStartPos.current = {
+      x: touch.clientX - currentX,
+      y: touch.clientY - currentY
+    };
+  }, [position]);
+
   // Mouse move/up handlers for dragging
   useEffect(() => {
     const handleMouseMove = (e) => {
       e.preventDefault();
-      if (isDraggingHue) {
+      if (isDraggingPicker) {
+        const newX = e.clientX - dragStartPos.current.x;
+        const newY = e.clientY - dragStartPos.current.y;
+        setPosition({ x: newX, y: newY });
+      } else if (isDraggingHue) {
         updateHue(e);
-      }
-      if (isDraggingSaturation) {
+      } else if (isDraggingSaturation) {
         updateSaturation(e);
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (!touch) return;
+      
+      if (isDraggingPicker) {
+        const newX = touch.clientX - dragStartPos.current.x;
+        const newY = touch.clientY - dragStartPos.current.y;
+        setPosition({ x: newX, y: newY });
+      } else if (isDraggingHue) {
+        updateHue({ clientX: touch.clientX, clientY: touch.clientY });
+      } else if (isDraggingSaturation) {
+        updateSaturation({ clientX: touch.clientX, clientY: touch.clientY });
       }
     };
 
     const handleMouseUp = () => {
       setIsDraggingHue(false);
       setIsDraggingSaturation(false);
+      setIsDraggingPicker(false);
     };
 
-    if (isDraggingHue || isDraggingSaturation) {
+    const handleTouchEnd = () => {
+      setIsDraggingHue(false);
+      setIsDraggingSaturation(false);
+      setIsDraggingPicker(false);
+    };
+
+    if (isDraggingHue || isDraggingSaturation || isDraggingPicker) {
       window.addEventListener('mousemove', handleMouseMove);
       window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchmove', handleTouchMove, { passive: false });
+      window.addEventListener('touchend', handleTouchEnd);
     }
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDraggingHue, isDraggingSaturation, updateHue, updateSaturation]);
+  }, [isDraggingHue, isDraggingSaturation, isDraggingPicker, updateHue, updateSaturation]);
 
   // Close on outside click (using click instead of mousedown to avoid conflicts)
   useEffect(() => {
@@ -207,14 +300,18 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
       <div
         ref={pickerRef}
         onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
+        onMouseDown={handlePickerMouseDown}
+        onTouchStart={handlePickerTouchStart}
         style={{
           position: 'fixed',
-          top: '50%',
-          left: '50%',
+          top: position ? `${position.y}px` : (isMobile ? '50%' : '50%'),
+          left: position ? `${position.x}px` : (isMobile ? '50%' : '50%'),
           transform: 'translate(-50%, -50%)',
-          width: '260px',
-          padding: 'var(--space-400)',
+          width: isMobile ? 'min(90vw, 280px)' : '260px',
+          padding: isMobile ? 'var(--space-300)' : 'var(--space-400)',
+          maxWidth: '90vw',
+          maxHeight: '90vh',
+          overflow: 'auto',
           backgroundColor: 'rgba(0, 0, 0, 0.15)',
           backdropFilter: 'blur(40px) saturate(200%)',
           WebkitBackdropFilter: 'blur(40px) saturate(200%)',
@@ -229,7 +326,8 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--space-400)',
-          fontFamily: 'inherit'
+          fontFamily: 'inherit',
+          cursor: isDraggingPicker ? 'grabbing' : 'grab'
         }}
       >
         {/* Shimmer overlay */}
@@ -252,11 +350,13 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
         {/* Saturation/Lightness picker */}
         <div
           ref={saturationRef}
+          data-color-control
           onMouseDown={handleSaturationMouseDown}
+          onTouchStart={handleSaturationTouchStart}
           style={{
             position: 'relative',
             width: '100%',
-            height: '160px',
+            height: isMobile ? '140px' : '160px',
             borderRadius: 'var(--border-radius-300)',
             background: saturationGradient,
             cursor: 'crosshair',
@@ -303,7 +403,9 @@ export default function LiquidGlassColorPicker({ color, onChange, onClose }) {
         {/* Hue slider */}
         <div
           ref={hueRef}
+          data-color-control
           onMouseDown={handleHueMouseDown}
+          onTouchStart={handleHueTouchStart}
           style={{
             position: 'relative',
             width: '100%',
