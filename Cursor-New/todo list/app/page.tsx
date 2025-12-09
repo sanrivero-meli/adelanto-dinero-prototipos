@@ -35,7 +35,15 @@ export default function Home() {
     if (!isSupabaseConfigured) {
       const storedTodos = localStorage.getItem('todos')
       if (storedTodos) {
-        setTodos(JSON.parse(storedTodos))
+        const todos = JSON.parse(storedTodos)
+        // Sort: incomplete first, completed at bottom
+        const sortedTodos = [...todos].sort((a, b) => {
+          if (a.completed === b.completed) {
+            return (a.position || 0) - (b.position || 0)
+          }
+          return a.completed ? 1 : -1
+        })
+        setTodos(sortedTodos)
       }
       setIsLoading(false)
       return
@@ -54,16 +62,37 @@ export default function Home() {
         // Fallback to localStorage
         const storedTodos = localStorage.getItem('todos')
         if (storedTodos) {
-          setTodos(JSON.parse(storedTodos))
+          const todos = JSON.parse(storedTodos)
+          const sortedTodos = [...todos].sort((a, b) => {
+            if (a.completed === b.completed) {
+              return (a.position || 0) - (b.position || 0)
+            }
+            return a.completed ? 1 : -1
+          })
+          setTodos(sortedTodos)
         }
       } else {
-        setTodos(data || [])
+        // Sort: incomplete first, completed at bottom
+        const sortedTodos = [...(data || [])].sort((a, b) => {
+          if (a.completed === b.completed) {
+            return (a.position || 0) - (b.position || 0)
+          }
+          return a.completed ? 1 : -1
+        })
+        setTodos(sortedTodos)
       }
     } catch (error) {
       console.error('Error loading todos:', error)
       const storedTodos = localStorage.getItem('todos')
       if (storedTodos) {
-        setTodos(JSON.parse(storedTodos))
+        const todos = JSON.parse(storedTodos)
+        const sortedTodos = [...todos].sort((a, b) => {
+          if (a.completed === b.completed) {
+            return (a.position || 0) - (b.position || 0)
+          }
+          return a.completed ? 1 : -1
+        })
+        setTodos(sortedTodos)
       }
     } finally {
       setIsLoading(false)
@@ -101,6 +130,8 @@ export default function Home() {
   }, [isSupabaseConfigured])
 
   const addTodo = async (text: string) => {
+    const incompleteCount = todos.filter(t => !t.completed).length
+    
     if (!isSupabaseConfigured) {
       const newTodo: Todo = {
         id: Date.now().toString(),
@@ -108,23 +139,41 @@ export default function Home() {
         completed: false,
         completed_at: null,
         created_at: new Date().toISOString(),
-        position: todos.length
+        position: 0
       }
-      const updatedTodos = [...todos, newTodo]
+      // Add at the beginning of incomplete todos
+      const incompleteTodos = todos.filter(t => !t.completed)
+      const completedTodos = todos.filter(t => t.completed)
+      
+      // Shift positions of existing incomplete todos
+      const shiftedIncomplete = incompleteTodos.map((t, idx) => ({
+        ...t,
+        position: idx + 1
+      }))
+      
+      const updatedTodos = [newTodo, ...shiftedIncomplete, ...completedTodos]
       setTodos(updatedTodos)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
       return
     }
 
     try {
-      const position = todos.length
+      // Shift positions of existing incomplete todos
+      const incompleteTodos = todos.filter(t => !t.completed)
+      for (const [idx, todo] of incompleteTodos.entries()) {
+        await supabase
+          .from('todos')
+          .update({ position: idx + 1 })
+          .eq('id', todo.id)
+      }
+
       const { data, error } = await supabase
         .from('todos')
         .insert([
           {
             text: text,
             completed: false,
-            position: position
+            position: 0
           }
         ])
         .select()
@@ -139,13 +188,20 @@ export default function Home() {
           completed: false,
           completed_at: null,
           created_at: new Date().toISOString(),
-          position: todos.length
+          position: 0
         }
-        const updatedTodos = [...todos, newTodo]
+        const incompleteTodos = todos.filter(t => !t.completed)
+        const completedTodos = todos.filter(t => t.completed)
+        const shiftedIncomplete = incompleteTodos.map((t, idx) => ({
+          ...t,
+          position: idx + 1
+        }))
+        const updatedTodos = [newTodo, ...shiftedIncomplete, ...completedTodos]
         setTodos(updatedTodos)
         localStorage.setItem('todos', JSON.stringify(updatedTodos))
       } else {
-        setTodos([...todos, data])
+        // Reload todos to get updated positions
+        await loadTodos()
       }
     } catch (error) {
       console.error('Error adding todo:', error)
@@ -155,9 +211,15 @@ export default function Home() {
         completed: false,
         completed_at: null,
         created_at: new Date().toISOString(),
-        position: todos.length
+        position: 0
       }
-      const updatedTodos = [...todos, newTodo]
+      const incompleteTodos = todos.filter(t => !t.completed)
+      const completedTodos = todos.filter(t => t.completed)
+      const shiftedIncomplete = incompleteTodos.map((t, idx) => ({
+        ...t,
+        position: idx + 1
+      }))
+      const updatedTodos = [newTodo, ...shiftedIncomplete, ...completedTodos]
       setTodos(updatedTodos)
       localStorage.setItem('todos', JSON.stringify(updatedTodos))
     }
@@ -172,33 +234,62 @@ export default function Home() {
       completed: newCompletedState,
       completed_at: newCompletedState ? new Date().toISOString() : null
     }
+    
+    // Reorder todos: completed tasks go to bottom, incomplete stay at top
     const updatedTodos = [...todos]
     updatedTodos[index] = {
       ...todo,
       ...updateData
     }
-    setTodos(updatedTodos)
+    
+    // Separate completed and incomplete todos
+    const incompleteTodos = updatedTodos.filter(t => !t.completed)
+    const completedTodos = updatedTodos.filter(t => t.completed)
+    
+    // Reorder: incomplete first, then completed
+    const reorderedTodos = [...incompleteTodos, ...completedTodos]
+    
+    // Update positions
+    const finalTodos = reorderedTodos.map((todo, index) => ({
+      ...todo,
+      position: index
+    }))
+    
+    setTodos(finalTodos)
     
     if (!isSupabaseConfigured) {
-      localStorage.setItem('todos', JSON.stringify(updatedTodos))
+      localStorage.setItem('todos', JSON.stringify(finalTodos))
       return
     }
 
     try {
-      const { error } = await supabase
+      // Update the todo completion status
+      const { error: updateError } = await supabase
         .from('todos')
         .update(updateData)
         .eq('id', todo.id)
 
-      if (error) {
-        console.error('Error updating todo:', error)
-        // Fallback to localStorage on error
-        localStorage.setItem('todos', JSON.stringify(updatedTodos))
+      if (updateError) {
+        console.error('Error updating todo:', updateError)
+        localStorage.setItem('todos', JSON.stringify(finalTodos))
+        return
+      }
+
+      // Update positions for all todos
+      for (const [idx, t] of finalTodos.entries()) {
+        const { error: positionError } = await supabase
+          .from('todos')
+          .update({ position: idx })
+          .eq('id', t.id)
+
+        if (positionError) {
+          console.error('Error updating todo position:', positionError)
+        }
       }
     } catch (error) {
       console.error('Error updating todo:', error)
       // Fallback to localStorage on network error
-      localStorage.setItem('todos', JSON.stringify(updatedTodos))
+      localStorage.setItem('todos', JSON.stringify(finalTodos))
     }
   }
 
